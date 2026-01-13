@@ -1,22 +1,30 @@
 use eframe::{
-    egui::{
-        self, CentralPanel, Context, FontId, SidePanel, TextStyle,
-        TopBottomPanel,
-    },
+    egui::{CentralPanel, Context, FontId, SidePanel, TextStyle},
     run_native,
 };
 
+mod device;
+mod menu;
+
 #[derive(Default)]
-struct App {}
+struct App {
+    device_choose_open: bool,
+    input_devices: Vec<InputDevice>,
+}
+
+#[derive(Default)]
+struct InputDevice {
+    id: String,
+}
 
 impl eframe::App for App {
     fn update(
         &mut self,
         ctx: &eframe::egui::Context,
-        frame: &mut eframe::Frame,
+        _frame: &mut eframe::Frame,
     ) {
         set_styles(ctx);
-        set_top_bar(ctx);
+        menu::set_top_bar(self, ctx);
 
         SidePanel::left("left_panel").show(ctx, |ui| {
             ui.vertical_centered(|ui| {
@@ -25,7 +33,7 @@ impl eframe::App for App {
             });
         });
 
-        SidePanel::right("right_panel").show(ctx, |ui| {});
+        SidePanel::right("right_panel").show(ctx, |_ui| {});
 
         CentralPanel::default().show(ctx, |ui| {
             ui.horizontal_centered(|ui| {
@@ -38,11 +46,11 @@ impl eframe::App for App {
 }
 
 pub fn run() {
-    // TODO set min sizes, increase initial size
     let options = eframe::NativeOptions {
         viewport: eframe::egui::viewport::ViewportBuilder::default()
             .with_resizable(true)
-            .with_inner_size([320.0, 240.0]),
+            .with_inner_size([640.0, 360.0])
+            .with_min_inner_size([480.0, 240.0]),
         ..Default::default()
     };
 
@@ -78,20 +86,4 @@ fn set_styles(ctx: &Context) {
     .into();
 
     ctx.set_style(style);
-}
-
-fn set_top_bar(ctx: &Context) {
-    TopBottomPanel::top("menu_bar").show(ctx, |ui| {
-        egui::containers::menu::MenuBar::new().ui(ui, |ui| {
-            ui.menu_button("File", |ui| {
-                if ui.button("Exit").clicked() {
-                    ctx.send_viewport_cmd(egui::ViewportCommand::Close);
-                }
-            });
-            ui.menu_button(
-                "Audio",
-                |ui| if ui.button("Devices...").clicked() {},
-            );
-        });
-    });
 }
