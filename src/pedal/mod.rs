@@ -1,3 +1,5 @@
+use crate::audio::{self, Device};
+
 use eframe::{
     egui::{CentralPanel, Context, FontId, SidePanel, TextStyle},
     run_native,
@@ -9,12 +11,18 @@ mod menu;
 #[derive(Default)]
 struct App {
     device_choose_open: bool,
-    input_devices: Vec<InputDevice>,
+    devices: Vec<Device>,
 }
 
-#[derive(Default)]
-struct InputDevice {
-    id: String,
+impl App {
+    fn new() -> Self {
+        let devices = audio::get_devices();
+
+        Self {
+            devices,
+            ..Default::default()
+        }
+    }
 }
 
 impl eframe::App for App {
@@ -37,9 +45,7 @@ impl eframe::App for App {
 
         CentralPanel::default().show(ctx, |ui| {
             ui.horizontal_centered(|ui| {
-                ui.label("Left controls");
                 ui.label("Workspace");
-                ui.label("Right controls");
             });
         });
     }
@@ -54,12 +60,8 @@ pub fn run() {
         ..Default::default()
     };
 
-    run_native(
-        "Dashboard",
-        options,
-        Box::new(|_| Ok(Box::<App>::default())),
-    )
-    .unwrap();
+    run_native("Dashboard", options, Box::new(|_| Ok(Box::new(App::new()))))
+        .unwrap();
 }
 
 fn set_styles(ctx: &Context) {
