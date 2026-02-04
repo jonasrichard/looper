@@ -13,32 +13,16 @@ pub fn choose_device(app: &mut App, ctx: &Context) {
         let mut selected = String::new();
 
         ComboBox::from_label("Select input device").show_ui(ui, |ui| {
-            for device in app
-                .devices
-                .iter()
-                .filter(|d| d.device_type == DeviceType::Input)
-            {
-                ui.selectable_value(
-                    &mut selected,
-                    device.id.clone(),
-                    device.description.clone(),
-                );
+            for device in app.devices.iter().filter(|d| d.device_type == DeviceType::Input) {
+                ui.selectable_value(&mut selected, device.id.clone(), device.description.clone());
             }
         });
 
         ui.label("Output devices");
 
         ComboBox::from_label("Select output device").show_ui(ui, |ui| {
-            for device in app
-                .devices
-                .iter()
-                .filter(|d| d.device_type == DeviceType::Output)
-            {
-                ui.selectable_value(
-                    &mut selected,
-                    device.id.clone(),
-                    device.description.clone(),
-                );
+            for device in app.devices.iter().filter(|d| d.device_type == DeviceType::Output) {
+                ui.selectable_value(&mut selected, device.id.clone(), device.description.clone());
             }
         });
 
